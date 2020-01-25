@@ -7,7 +7,7 @@ class Calculator extends React.Component {
     constructor() {
         super();
         this.state = {
-            operatorClicked: false,
+            
             inputArray: [],
             history: [],
             lastElement: 0,
@@ -188,7 +188,8 @@ class Calculator extends React.Component {
         this.setState({
             inputArray: [],
             history: [],
-            lastElement: 0
+            lastElement: 0,
+            equalLastClicked: false
         })
     }
 
