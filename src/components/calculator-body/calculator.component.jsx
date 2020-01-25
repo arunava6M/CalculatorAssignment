@@ -170,18 +170,14 @@ class Calculator extends React.Component {
             }
             else {
                 this.setState({
-                    inputArray: [0, input]
+                    inputArray: [0, input],
+                    history:[0,input]
                 })
             }
 
 
 
         };
-
-
-
-
-
     }
 
     onClear = () => {
@@ -224,8 +220,6 @@ class Calculator extends React.Component {
     render() {
         return (
             <div className={`${this.showDay() ? 'inverted' : ''} calculatorBody`}>
-
-
                 <div className="display">
                     <div className="toggle" onClick={this.timeToggle}>
                         <div onClick={this.timeToggle} className={`${this.showDay() ? 'night' : 'day'} timeButton`} >
