@@ -1,0 +1,11 @@
+.app {
+  width: 100vw;
+  height: 100vh;
+  display: flex;
+  flex-direction: row;
+  justify-content: space-evenly;
+  .calculator{
+    padding-top: 100px;
+  }
+  
+}

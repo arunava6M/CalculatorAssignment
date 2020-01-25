@@ -1,0 +1,48 @@
+.custom-button {
+    
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    font-size: 15px;
+    background-color: rgb(235, 219, 198);
+    color: #c60021;
+    text-transform: uppercase;
+    font-family: 'Open Sans Condensed';
+    font-weight: bolder;
+    border: none;
+    cursor: pointer;
+    display:flex;
+    justify-content: center;
+    
+    &:focus{
+        outline: 0;
+        background-color: #f7aeb4;
+    }
+    
+
+    &:hover {
+      background-color: #f6f6f8;
+      color:  #c60021;
+    //   border: 1px solid  #c60021;
+    }
+    &.operator{
+        width: 43px;
+        height: 43px;   
+        &:hover{
+            background-color: rgb(172, 165, 165);
+        }
+    }
+  
+    &.inverted{
+      background-color: rgb(135, 117, 190);
+      color: rgb(245, 244, 248);
+      &:hover{
+        background-color: rgb(50, 38, 87);
+        color: white;
+        border: none;
+  
+      }
+    }
+  
+  }
+  
