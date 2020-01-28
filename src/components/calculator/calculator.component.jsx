@@ -1,7 +1,8 @@
 import React from 'react';
-import CustomButton from '../custom-button/custom-button.component';
 
-import './calculator.styles.scss';
+import { ThemeContext } from '../../context/theme-context';
+import Template from './template';
+
 
 class Calculator extends React.Component {
     constructor() {
@@ -13,15 +14,13 @@ class Calculator extends React.Component {
             lastElement: 0,
             equalLastClicked: false,
             rootLastFound: false,
-            day: true,
+            ui: 'light',
             scientific: false
         };
     }
 
     //frequently needed functions and variables
     reqVar = {
-        tempArray: () => this.getTempArray(this.state.inputArray),
-        tempHistory: () => this.getTempArray(this.state.history),
         lastInput: () => this.state.inputArray[this.state.inputArray.length - 1],
         triggerCalc: () => this.calc(this.state.inputArray[0], this.state.inputArray[1], this.state.inputArray[2]),
         storeInHistory: (num) => {
@@ -32,7 +31,7 @@ class Calculator extends React.Component {
         }
     }
 
-    getTempArray = (array) => array.slice(0, array.length - 1);
+    
     appendNumber = (last, recent) => parseInt((last.toString()).concat(recent.toString()));
     isNum = (arg) => isNaN(arg) ? false : true;
     lastInput = () => this.state.inputArray[this.state.inputArray.length - 1];
@@ -54,28 +53,28 @@ class Calculator extends React.Component {
 
 
     //to toggle the UI from light to dark and vice versa 
-    timeToggle = () => {
-        console.log(this.state.day);
-        this.setState({
-            day: !this.state.day
-        })
+    timeToggle = () => this.setState({
+        ui: this.state.ui === 'light' ? 'dark' : 'light'
+    })
 
 
-    }
+
 
     //to find the square root of two inputs
     findRoot = () => {
-        const { tempArray, tempHistory, lastInput,storeInHistory} = this.reqVar;
+        const {inputArray,history}=this.state;
+        const {  lastInput, storeInHistory } = this.reqVar;
 
-        if (this.isNum(lastInput())) {          //to check if the last input is a number else do nothing
+        if (this.isNum(lastInput())) {     //to check if the last input is a number else do nothing
             const changedInput = Math.sqrt(lastInput());
+
             if (this.isNum(changedInput)) {
                 this.setState({
                     lastElement: changedInput,
-                    inputArray: [...tempArray(), changedInput],
-                    history: [...tempHistory(), storeInHistory(changedInput)],
+                    inputArray: [...inputArray.slice(0,inputArray.length-1), changedInput],
+                    history: [...history.slice(0,history.length-1), storeInHistory(changedInput)],
                     rootLastFound: true
-                })
+                });
 
             }
             else {          //if user tries to find square root which is a complex number or NaN return
@@ -90,29 +89,31 @@ class Calculator extends React.Component {
 
     //to find the square of two numbers
     findSquare = () => {
-        const { tempArray, tempHistory, lastInput,storeInHistory } = this.reqVar;
+        const {inputArray,history}=this.state;
+        const { lastInput, storeInHistory } = this.reqVar;
 
         if (this.isNum(lastInput())) {           //to check if the last input is a number else do nothing
             const changedInput = lastInput() * lastInput();
             console.log(changedInput);
             this.setState({
                 lastElement: changedInput,
-                inputArray: [...tempArray(), changedInput],
-                history: [...tempHistory(), storeInHistory(changedInput)]
+                inputArray: [...inputArray.slice(0,inputArray.length-1), changedInput],
+                history: [...history.slice(0,history.length-1), storeInHistory(changedInput)]
             })
         }
     }
 
     //to change a number from positive to negative and vice versa
     signChange = () => {
-        const { tempArray, tempHistory, lastInput ,storeInHistory} = this.reqVar;
+        const {inputArray,history}=this.state;
+        const {  lastInput, storeInHistory } = this.reqVar;
 
         if (this.isNum(lastInput())) {           //to check if the last input is a number else do nothing
             const changedInput = -lastInput();         //ex: -8=>-(-8) || 8=>-8
             this.setState({
                 lastElement: changedInput,
-                inputArray: [...tempArray(), changedInput],
-                history: [...tempHistory(), storeInHistory(changedInput)]
+                inputArray: [...inputArray.slice(0,inputArray.length-1), changedInput],
+                history: [...history.slice(0,history.length-1), storeInHistory(changedInput)]
             })
         }
     }
@@ -122,7 +123,7 @@ class Calculator extends React.Component {
 
         const numInput = parseInt(e.target.value);          //changing the typeof from string to number
         const { inputArray, history, equalLastClicked, rootLastFound } = this.state;
-        const { tempArray, lastInput, tempHistory } = this.reqVar;
+        const {  lastInput } = this.reqVar;
 
         //if last time equal is clicked, already an expression evaluated so for number input start with a new expression
         if (equalLastClicked) {
@@ -143,8 +144,8 @@ class Calculator extends React.Component {
 
             lastInput() ? (       //if array have inputs
                 this.isNum(lastInput()) ? this.setState({         //if last input is a number then append this input with that number
-                    inputArray: [...tempArray(), this.appendNumber(lastInput(), numInput)],
-                    history: [...tempHistory(), this.appendNumber(lastInput(), numInput)],
+                    inputArray: [...inputArray.slice(0,inputArray.length-1), this.appendNumber(lastInput(), numInput)],
+                    history: [...history.slice(0,history.length-1), this.appendNumber(lastInput(), numInput)],
                     lastElement: this.appendNumber(lastInput(), numInput)
                 }) : this.setState({            //if last input is an operator then simply addon the number 
                     inputArray: [...inputArray, numInput],
@@ -168,7 +169,7 @@ class Calculator extends React.Component {
     equalOnClick = () => {
 
         const { inputArray, history } = this.state;
-        const { triggerCalc,storeInHistory } = this.reqVar;
+        const { triggerCalc, storeInHistory } = this.reqVar;
 
         if (inputArray.length === 3) {
             this.setState({       //if its equal to 3 then calculate and store result alongwith new input otherwise do nothing
@@ -193,14 +194,14 @@ class Calculator extends React.Component {
                     history: [...history, input],
                     lastElement: triggerCalc(),
                     equalLastClicked: false,
-                    rootLastFound:false
+                    rootLastFound: false
                 }, console.log(this.state))
                     :
                     this.setState({
                         inputArray: [...inputArray, input],
                         history: [...history, input],
                         equalLastClicked: false,
-                        rootLastFound:false
+                        rootLastFound: false
                     })
             }       //if last input is an operator then do nothing for this input
         }
@@ -219,7 +220,7 @@ class Calculator extends React.Component {
             history: [],
             lastElement: 0,
             equalLastClicked: false,
-            rootLastFound:false
+            rootLastFound: false
         })
     }
 
@@ -239,60 +240,13 @@ class Calculator extends React.Component {
 
     render() {
         return (
+            <ThemeContext.Provider value={this.state.ui}>
+                <Template access={this} />
+            </ThemeContext.Provider>)
 
-            //depending on showDay return, add or remove inverted class, that inverts the UI color; sameway CustomButton sends true/false to its inverted props.
 
-            <div className={`${this.showDay() ? 'inverted' : ''} calculatorBody`}>
-                <div className="display">
-                    <div className="toggle" onClick={this.timeToggle}>
-                        <div onClick={this.timeToggle} className={`${this.showDay() ? 'night' : 'day'} timeButton`} >
-                            <i className={`${this.state.day ? 'fas fa-sun ' : ' fas  fa-moon'} `}></i>
-                        </div>
-                    </div>
-                    <div className="displayText">{this.state.lastElement}</div>
-                </div>
-                <div className="history">
-                    <div className="historyText">
-                        {this.showHistory()}
-                    </div>
-                </div>
-                <div className="input">
-                    <div className="row">
-                        <CustomButton value="1" onClick={this.onOperandClick} inverted={this.showDay()}>1</CustomButton>
-                        <CustomButton value="2" onClick={this.onOperandClick} inverted={this.showDay()}>2</CustomButton>
-                        <CustomButton value="3" onClick={this.onOperandClick} inverted={this.showDay()}>3</CustomButton>
-                        <CustomButton value="+" onClick={this.operatorOnClick} operator inverted={this.showDay()}>+</CustomButton>
-                    </div>
-                    <div className="row">
-                        <CustomButton value="4" onClick={this.onOperandClick} inverted={this.showDay()}>4</CustomButton>
-                        <CustomButton value="5" onClick={this.onOperandClick} inverted={this.showDay()}>5</CustomButton>
-                        <CustomButton value="6" onClick={this.onOperandClick} inverted={this.showDay()}>6</CustomButton>
-                        <CustomButton value="-" onClick={this.operatorOnClick} operator inverted={this.showDay()} >-</CustomButton>
-                    </div>
-                    <div className="row">
-                        <CustomButton value="7" onClick={this.onOperandClick} inverted={this.showDay()}>7</CustomButton>
-                        <CustomButton value="8" onClick={this.onOperandClick} inverted={this.showDay()}>8</CustomButton>
-                        <CustomButton value="9" onClick={this.onOperandClick} inverted={this.showDay()}>9</CustomButton>
-                        <CustomButton value="*" onClick={this.operatorOnClick} operator inverted={this.showDay()}>*</CustomButton>
-                    </div>
-                    <div className="row">
-                        <CustomButton value="clear" onClick={this.onClear} operator inverted={this.showDay()}>AC</CustomButton>
-                        <CustomButton value="0" onClick={this.onOperandClick} inverted={this.showDay()}>0</CustomButton>
-                        <CustomButton value="=" onClick={this.equalOnClick} operator inverted={this.showDay()}>=</CustomButton>
-                        <CustomButton value="/" onClick={this.operatorOnClick} operator inverted={this.showDay()}>/</CustomButton>
-                    </div>
-                    <div className={`${this.state.scientific ? 'showSc' : ''} scientific`}>
-                        <CustomButton onClick={this.signChange} inverted={this.showDay()}>-/+</CustomButton>
-                        <CustomButton onClick={this.findSquare} inverted={this.showDay()}>^2</CustomButton>
-                        <CustomButton onClick={this.findRoot} inverted={this.showDay()}>√</CustomButton>
-                    </div>
-                    <div className="scToggleWrap">
-                        <div className={`${this.showDay() ? 'night' : 'day'} scToggle`} onClick={this.toggleScientific} >SCIENTIFIC</div>
-                    </div>
-                </div>
 
-            </div >
-        )
+
     }
 };
 

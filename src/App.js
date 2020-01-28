@@ -1,7 +1,7 @@
 import React from 'react';
 
 import './App.scss';
-import Calculator from './components/calculator-body/calculator.component';
+import Calculator from './components/calculator/calculator.component.jsx';
 
 const App=()=>(
   <div className="app">
